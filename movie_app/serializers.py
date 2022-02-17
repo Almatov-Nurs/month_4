@@ -46,6 +46,7 @@ class ReviewMovieSerializer(serializers.ModelSerializer):
             "duration",
             "director",
             "review",
+            'rating'
         ]
     def get_director(self, direc):
         try:

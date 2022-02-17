@@ -8,13 +8,19 @@ class Director(models.Model):
         return self.director.all().count()      
 
     def __str__(self):
-        return self.name.director.all()
+        return self.name
 
 class Movie(models.Model):
     title = models.CharField(max_length=100, null=True)
     description = models.TextField()
     duration = models.TimeField()
     director = models.ForeignKey(Director, on_delete=models.DO_NOTHING, related_name='director')
+
+    @property
+    def rating(self):
+        reviews = Review.objects.filter(movie=self)
+        stars = [ i.stars for i in reviews]
+        return { 'средняя оценка': sum(stars)//len(stars)}
 
     def __str__(self):
         return self.title
