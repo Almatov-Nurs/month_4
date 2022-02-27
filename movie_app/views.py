@@ -1,11 +1,11 @@
-from importlib.metadata import requires
-from os import stat
-from turtle import title
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from movie_app import serializers
 from . import models
 from rest_framework import status
+from django.contrib.auth import authenticate
+from rest_framework.authtoken.models import Token
+from django.contrib.auth.models import User
 
 @api_view(['GET', 'POST'])
 def director_list_view(request):
@@ -130,3 +130,27 @@ def review_movie_list_view(request):
     movie = models.Movie.objects.all()
     data = serializers.ReviewMovieSerializer(movie, many=True).data
     return Response(data=data)
+
+@api_view(['POST'])
+def authorization(request):
+    if request.method == 'POST':
+        username = request.data.get('username')
+        password = request.data.get('password')
+        email = request.data.get("email")
+        user = authenticate(username=username, password=password, email=email)
+        if user:
+            try:
+                key_ = Token.objects.get(user=user)
+            except Token.DoesNotExist:
+                key_ = Token.objects.create(user=user)
+            return Response(data={'key': key_.key})
+        return Response(data={'error':'User not found!'}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['POST'])
+def registration(request):
+    if request.method == 'POST':
+        username = request.data.get('username')
+        password = request.data.get('password')
+        email = request.data.get("email")
+        User.objects.create_user(username=username, password=password, email=email)
+        return Response(data={"message":"User crreated!"}, status=status.HTTP_201_CREATED)
