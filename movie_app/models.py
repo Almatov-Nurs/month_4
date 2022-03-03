@@ -20,8 +20,11 @@ class Movie(models.Model):
     @property
     def rating(self):
         reviews = Review.objects.filter(movie=self)
-        stars = [ i.stars for i in reviews]
-        return { 'средняя оценка': sum(stars)//len(stars)}
+        stars = [ i.stars for i in reviews ]
+        if len(stars)>0:
+            return sum(stars)/len(stars)
+        elif len(stars)==0:
+            return stars
 
     def __str__(self):
         return self.title
@@ -33,3 +36,7 @@ class Review(models.Model):
 
     def __str__(self):
         return f"Review: {self.movie.title}"
+        
+
+class VerifyToUser(models.Model):
+    code = models.CharField(max_length=100)

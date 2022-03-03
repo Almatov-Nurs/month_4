@@ -2,6 +2,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import SerializerMethodField
 from rest_framework import serializers
 from . import models
+from django.contrib.auth.models import User
 
 class DirectorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -48,7 +49,7 @@ class ReviewMovieSerializer(serializers.ModelSerializer):
             "duration",
             "director",
             "review",
-            'rating'
+            "rating"
         ]
     def get_director(self, direc):
         try:
@@ -82,3 +83,16 @@ class MovieCreateUpdateSerializer(serializers.Serializer):
     def validate_director_id(self, director_id):
         if models.Director.objects.filter(id=director_id).count()==0:
             raise ValidationError(f'id {director_id} does not exist')
+            
+class RegisterSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+    def validate_username(self, username):
+        if  User.objects.filter(username=username):
+            raise ValidationError(f"User with this username already exist!")
+        return username
+
+class AuthorizateSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
