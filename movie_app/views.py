@@ -98,7 +98,7 @@ class MovieUpdateDeleteAPIView(RetrieveUpdateDestroyAPIView):
     queryset = models.Movie.objects.all()
     serializer_class = serializers.MovieSerializer
     lookup_field = "id"
-
+    
 # @api_view(["GET", "PUT", "DELETE"])
 # def movie_detail_view(request, id):
 #     try:
